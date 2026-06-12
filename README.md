@@ -6,8 +6,9 @@ percentage, add fades with selectable curves, preview results, and inspect
 waveforms before export.
 
 It is independent from Unity. Game projects should either keep a project-local
-copy when they need to pin/customize AudioTrim, or record the path to a machine
-install such as this repository checkout.
+copy when they deliberately need to pin/customize AudioTrim, or rely on the
+machine-level install marker so multiple projects can share one installation.
+Do not commit developer-specific absolute paths into consuming projects.
 
 ## Setup
 
@@ -39,28 +40,27 @@ Recommended generic per-user install path on Windows:
 %LOCALAPPDATA%\Programs\AudioTrim
 ```
 
-For an actively developed machine checkout, a stable project folder such as
-`D:\LabProjects\AudioTrim` is also appropriate. Mark the active install in:
+Record the active machine install in:
 
 ```text
 %APPDATA%\AudioTrim\install.json
 ```
 
-A typical marker:
+A typical user install marker:
 
 ```json
 {
-  "install_path": "D:\\LabProjects\\AudioTrim",
-  "local_project_path": "D:\\LabProjects\\AudioTrim",
+  "install_path": "%LOCALAPPDATA%\\Programs\\AudioTrim",
+  "audio_trim_py": "%LOCALAPPDATA%\\Programs\\AudioTrim\\audio_trim.py",
   "repo_url": "git@github.com:onovich/AudioTrim.git",
-  "distribution": "git-dev-checkout",
+  "distribution": "git",
   "commit": "<short-sha>"
 }
 ```
 
-Projects can additionally commit their own pointer, for example
-`.codex/audio-trim.json`, so automation knows which AudioTrim checkout belongs
-to that project without embedding the tool source.
+Developers may keep a source checkout in any stable local folder. That personal
+path should be recorded in the machine marker or in a consuming project's
+ignored `.codex/audio-trim.local.json`, not in a committed project config.
 
 ## Workflow
 

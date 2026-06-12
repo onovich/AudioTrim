@@ -53,17 +53,20 @@ python <AudioTrimRoot>\audio_trim.py --gui
 python <AudioTrimRoot>\audio_trim.py --self-test
 ```
 
-Consumers may read `%APPDATA%\AudioTrim\install.json` or their own project
-pointer file. A pointer should contain at least:
+Consumers should first read `%APPDATA%\AudioTrim\install.json`, then fall back
+to `%LOCALAPPDATA%\Programs\AudioTrim`. A marker should contain at least:
 
 ```json
 {
-  "install_path": "D:\\LabProjects\\AudioTrim",
-  "local_project_path": "D:\\LabProjects\\AudioTrim",
-  "audio_trim_py": "D:\\LabProjects\\AudioTrim\\audio_trim.py",
+  "install_path": "%LOCALAPPDATA%\\Programs\\AudioTrim",
+  "audio_trim_py": "%LOCALAPPDATA%\\Programs\\AudioTrim\\audio_trim.py",
   "repo_url": "git@github.com:onovich/AudioTrim.git"
 }
 ```
+
+A consuming project may also keep an ignored local override such as
+`.codex/audio-trim.local.json` for a developer's personal checkout. Do not commit
+that file unless it contains only portable, non-user-specific values.
 
 If a game project needs custom behavior, prefer changing AudioTrim here and
 upstreaming it. Only embed a project-local copy when the project must pin a

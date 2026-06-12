@@ -1,13 +1,14 @@
 # AudioTrim Agent Notes
 
 AudioTrim is a standalone Python/Tkinter tool. Keep it independent from Unity
-projects; project repos should record paths to AudioTrim instead of carrying the
-source unless they deliberately need a pinned project-local copy.
+projects; project repos should record developer-specific paths only in ignored
+local override files, or rely on the machine-level install marker.
 
 ## Repository Boundaries
 
 - Canonical remote: `git@github.com:onovich/AudioTrim.git`.
-- Local development checkout on this machine: `D:\LabProjects\AudioTrim`.
+- Generic Windows install path: `%LOCALAPPDATA%\Programs\AudioTrim`.
+- Machine install marker: `%APPDATA%\AudioTrim\install.json`.
 - Do not commit `vendor/`, `output/`, `.preview/`, `audio_trim_config.json`, or
   `__pycache__/`.
 - FFmpeg binaries live in `vendor/` locally and are configured by path in the
@@ -30,12 +31,12 @@ waveform preview, play/loop, preview trim, and export.
 
 Automation such as `audio-sfx-workflow` should resolve AudioTrim in this order:
 
-1. project-local tool copy, if present;
-2. project pointer such as `.codex/audio-trim.json`;
+1. project-local tool copy, if intentionally embedded;
+2. ignored project override such as `.codex/audio-trim.local.json`;
 3. machine marker `%APPDATA%\AudioTrim\install.json`;
-4. generic default install path;
+4. generic default install path `%LOCALAPPDATA%\Programs\AudioTrim`;
 5. install from the canonical remote.
 
 When adding a feature for a game workflow, update this repository first, push it,
-then update the consuming project pointer or skill notes only if the integration
-contract changed.
+then update consuming project code only if the integration contract changed.
+Do not commit personal absolute paths into consuming project repositories.
