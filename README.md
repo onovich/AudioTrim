@@ -1,41 +1,71 @@
 # AudioTrim
 
-Batch trims silent heads and tails from audio files. The tool is independent
-from Unity and is intended for preparing SFX assets before importing them into a
-game project.
+AudioTrim is a standalone Python/Tkinter tool for batch-trimming game SFX. It
+can trim silent heads/tails, keep only the first audible segment, keep a source
+percentage, add fades with selectable curves, preview results, and inspect
+waveforms before export.
+
+It is independent from Unity. Game projects should either keep a project-local
+copy when they need to pin/customize AudioTrim, or record the path to a machine
+install such as this repository checkout.
 
 ## Setup
 
 1. Install Python 3.10+.
 2. Download a Windows FFmpeg build.
-3. Put `ffmpeg.exe` and `ffprobe.exe` in `vendor/` next to `audio_trim.py`.
-   When AudioTrim is embedded in a project, this path is commonly
-   `Tools/AudioTrim/vendor/`.
-4. Double-click `RunAudioTrim.cmd`.
+3. Put `ffmpeg.exe` and `ffprobe.exe` in `vendor/` next to `audio_trim.py`, or
+   choose their paths in the GUI.
+4. Double-click `RunAudioTrim.cmd`, or run `python audio_trim.py --gui`.
 
-The `vendor/` folder is intentionally ignored by git, so large FFmpeg binaries
-are not committed to the repository.
+The following folders/files are local-only and intentionally ignored by git:
 
-## Distribution
+- `vendor/`
+- `output/`
+- `.preview/`
+- `audio_trim_config.json`
+- `__pycache__/`
 
-Recommended per-user install path on Windows:
+## Distribution And Discovery
+
+Canonical source repo:
+
+```text
+git@github.com:onovich/AudioTrim.git
+```
+
+Recommended generic per-user install path on Windows:
 
 ```text
 %LOCALAPPDATA%\Programs\AudioTrim
 ```
 
-Machine-level discovery can use either:
+For an actively developed machine checkout, a stable project folder such as
+`D:\LabProjects\AudioTrim` is also appropriate. Mark the active install in:
 
-- `AUDIOTRIM_HOME`, pointing at the folder that contains `audio_trim.py`;
-- `%APPDATA%\AudioTrim\install.json`, with an `install_path` field.
+```text
+%APPDATA%\AudioTrim\install.json
+```
 
-Project-local copies should still win over a machine install. That lets a game
-project pin or patch AudioTrim without changing the user's global tool.
+A typical marker:
+
+```json
+{
+  "install_path": "D:\\LabProjects\\AudioTrim",
+  "local_project_path": "D:\\LabProjects\\AudioTrim",
+  "repo_url": "git@github.com:onovich/AudioTrim.git",
+  "distribution": "git-dev-checkout",
+  "commit": "<short-sha>"
+}
+```
+
+Projects can additionally commit their own pointer, for example
+`.codex/audio-trim.json`, so automation knows which AudioTrim checkout belongs
+to that project without embedding the tool source.
 
 ## Workflow
 
 The GUI defaults to the current system language and can be switched between
-Chinese and English from the language picker in the title area.
+Chinese and English from the language picker.
 
 1. Choose an input directory. The task list scans automatically.
 2. Choose an output directory if the default sibling output folder is not what
@@ -70,27 +100,16 @@ Vorbis. Name collisions are resolved by adding a suffix.
 - `Absolute Silence`: Scan-time report for exact zero-sample silence at the
   head or tail. It is informational and meant for review before exporting.
 - `Edge Trim`: Per-row switch that controls whether head/tail trimming is used
-  for preview and export. It defaults to `Yes` in normal trim mode.
-- In `Keep first segment only` mode, `Edge Trim` displays `Auto`: the tool
-  normalizes the leading/trailing edge before finding the first segment, so the
-  per-row edge switch is intentionally disabled. This keeps the result aligned
-  with the user's intent: output only the first audible segment.
-- `Fade in` / `Fade out`: Adds a small envelope to avoid harsh cuts. In first
-  segment mode, fade-out is forced on if it is not already enabled. Duration and
-  curve controls are shown only after the corresponding fade option is enabled.
-- `Curve`: Curves are shown as small function previews next to the selector
-  instead of text ramps, so the envelope shape is visible before export.
-
-- `Play Selected File`: Converts the selected listed audio to a temporary WAV
-  and plays it, so OGG/MP3 files can be auditioned from the list. Use `Loop`
-  beside it for repeated playback.
-- `Waveform Review`: Shows a downsampled peak waveform for the selected listed
-  file. It includes a simple time axis and a red playhead while auditioning.
-  This is meant for fast visual QA, not sample-accurate editing.
+  for preview and export.
+- `Fade in` / `Fade out`: Adds a small envelope to avoid harsh cuts. Duration
+  and curve controls are shown only after the corresponding fade option is
+  enabled.
+- `Waveform Review`: Shows a downsampled peak waveform with a simple time axis
+  and playhead while auditioning.
 
 ## CLI Examples
 
-Dry-run all OGG/MP3 files from a standalone checkout:
+Dry-run all OGG/MP3 files:
 
 ```bat
 python audio_trim.py --input D:\SFX --dry-run
@@ -120,9 +139,10 @@ Run lightweight internal tests:
 python audio_trim.py --self-test
 ```
 
-If AudioTrim is embedded under `Tools/AudioTrim`, prefix the script path with
-that folder. Or use the launcher:
+Or use the launcher:
 
 ```bat
 RunAudioTrim.cmd
+RunAudioTrim.ps1 -DryRun
+RunAudioTrim.ps1 -SelfTest
 ```

@@ -1,11 +1,10 @@
 @echo off
 setlocal
 
-cd /d "%~dp0"
-python "%~dp0audio_trim.py" --gui
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0RunAudioTrim.ps1" %*
 
 if errorlevel 1 (
     echo.
-    echo AudioTrim exited with an error.
+    echo AudioTrim launcher exited with an error.
     pause
 )
