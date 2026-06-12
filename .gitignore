@@ -1,0 +1,7 @@
+vendor/
+.preview/
+__pycache__/
+audio_trim_config.json
+output/
+Output/
+*.pyc
